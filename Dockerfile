@@ -5,12 +5,18 @@ FROM julia:1.0
 # in Project.toml and add that to the container instead.
 
 # Only add Project.toml, Manifest.toml, docker-simple.jl, and /src
-ADD *.toml /Joseki/
-ADD /examples /Joseki/examples
-ADD /src /Joseki/src/
-WORKDIR /Joseki
+#ADD *.toml /Joseki/
+#ADD /examples /Joseki/examples
+#ADD /src /Joseki/src/
+#WORKDIR /Joseki
 
 # Install dependencies
-RUN julia -e 'using Pkg; pkg"activate ."; pkg"instantiate"'
+#RUN julia -e 'using Pkg; pkg"activate ."; pkg"instantiate"'
 
-CMD julia --project ./examples/docker-simple.jl
+#CMD julia --project ./examples/docker-simple.jl
+RUN julia -e 'using Pkg; Pkg.add.(["HTTP", "JSON", "Dates"])' \
+ && julia -e 'using Pkg; Pkg.add( PackageSpec(url="https://github.com/snthot/Joseki.jl.git", rev="master"))' 
+
+COPY /examples/docker-simple.jl /server.jl
+
+CMD julia /server.jl
